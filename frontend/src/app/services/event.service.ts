@@ -34,6 +34,7 @@ export class EventService {
   }
 
   async deleteEvent(eventId: string) {
+    console.log(this.authService.getToken())
     const res = await axios.delete(`${this.baseUrl}/${eventId}`, this.getAuthHeaders());
     return res.data;
   }

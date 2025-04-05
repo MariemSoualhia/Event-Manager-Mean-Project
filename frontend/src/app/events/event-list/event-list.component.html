@@ -1,1 +1,18 @@
-<p>event-list works!</p>
+<div class="container mt-4">
+    <h2>Event List</h2>
+    <div *ngIf="events.length === 0">No events available.</div>
+  
+    <div *ngFor="let event of events" class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">{{ event.title }}</h5>
+        <p class="card-text">{{ event.description }}</p>
+        <p class="card-text">
+          <strong>Date:</strong> {{ event.date | date:'medium' }}<br>
+          <strong>Location:</strong> {{ event.location }}<br>
+          <strong>Created by:</strong> {{ event.createdBy?.name }}
+        </p>
+        <button class="btn btn-primary" (click)="register(event._id)">Register</button>
+      </div>
+    </div>
+  </div>
+  

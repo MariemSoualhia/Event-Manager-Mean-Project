@@ -1,0 +1,24 @@
+.container {
+    max-width: 960px;
+  }
+  .card-title {
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  .card-text {
+    font-size: 0.95rem;
+  }
+  .card-footer button {
+    width: 48%;
+  }
+  form input, form textarea {
+    background-color: #f9f9f9;
+  }
+  .btn-success {
+    background-color: #27ae60;
+    border-color: #27ae60;
+  }
+  .btn-success:hover {
+    background-color: #219150;
+    border-color: #219150;
+  }

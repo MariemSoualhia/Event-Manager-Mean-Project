@@ -1,0 +1,46 @@
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Event Management</h2>
+  
+    <form class="card p-4 mb-4 shadow" (ngSubmit)="createEvent()">
+      <h4 class="mb-3">Create a New Event</h4>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <input type="text" class="form-control" placeholder="Title" [(ngModel)]="title" name="title" required>
+        </div>
+        <div class="col-md-6">
+          <input type="datetime-local" class="form-control" [(ngModel)]="date" name="date" required>
+        </div>
+        <div class="col-md-6">
+          <input type="text" class="form-control" placeholder="Location" [(ngModel)]="location" name="location">
+        </div>
+        <div class="col-md-6">
+          <textarea class="form-control" rows="1" placeholder="Description" [(ngModel)]="description" name="description"></textarea>
+        </div>
+      </div>
+      <div class="text-end mt-3">
+        <button class="btn btn-success" type="submit">Create Event</button>
+      </div>
+    </form>
+  
+    <div class="row">
+      <div *ngFor="let event of events" class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">{{ event.title }}</h5>
+            <p class="card-text">{{ event.description }}</p>
+            <p class="card-text small text-muted">
+              📍 {{ event.location }} <br>
+              🗓️ {{ event.date | date: 'medium' }} <br>
+              👤 {{ event.createdBy?.name }}
+            </p>
+          </div>
+          <div class="card-footer d-flex justify-content-between">
+            <button class="btn btn-primary btn-sm" (click)="register(event._id)">Register</button>
+            <button class="btn btn-outline-danger btn-sm" (click)="deleteEvent(event._id)">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  

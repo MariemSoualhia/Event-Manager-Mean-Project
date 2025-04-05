@@ -2,7 +2,7 @@ const Event = require("../models/Event");
 
 exports.createEvent = async (req, res) => {
   try {
-    const event = await Event.create({ ...req.body, createdBy: req.user.id });
+    const event = await Event.create({ ...req.body });
     res.status(201).json(event);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -35,14 +35,15 @@ exports.registerToEvent = async (req, res) => {
 
 exports.deleteEvent = async (req, res) => {
   try {
+    console.log(req.user.id);
     const event = await Event.findById(req.params.id);
-    if (
-      event.createdBy.toString() !== req.user.id &&
-      req.user.role !== "admin"
-    ) {
-      return res.status(403).json({ message: "Unauthorized" });
-    }
-    await event.remove();
+    // if (
+    //   event.createdBy.toString() !== req.user.id &&
+    //   req.user.role !== "admin"
+    // ) {
+    //   return res.status(403).json({ message: "Unauthorized" });
+    // }
+    await event.deleteOne();
     res.json({ message: "Event deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });

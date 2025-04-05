@@ -1,12 +1,33 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
+import { EventService } from '../../services/event.service';
 
 @Component({
   selector: 'app-create-event',
   standalone: true,
-  imports: [],
   templateUrl: './create-event.component.html',
-  styleUrl: './create-event.component.css'
+  imports: [CommonModule, FormsModule]
 })
 export class CreateEventComponent {
+  title = '';
+  description = '';
+  date = '';
+  location = '';
 
+  constructor(private eventService: EventService, private router: Router) {}
+
+  async createEvent() {
+    const eventData = {
+      title: this.title,
+      description: this.description,
+      date: this.date,
+      location: this.location
+    };
+    await this.eventService.createEvent(eventData);
+    alert('Event created!');
+    this.router.navigate(['/events']);
+  }
 }

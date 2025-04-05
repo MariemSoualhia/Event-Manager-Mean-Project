@@ -1,0 +1,10 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+    <a class="navbar-brand" routerLink="/">EventManager</a>
+    <div class="ms-auto">
+      <a *ngIf="!isLoggedIn" routerLink="/login" class="btn btn-outline-light me-2">Login</a>
+      <a *ngIf="!isLoggedIn" routerLink="/register" class="btn btn-outline-light me-2">Register</a>
+      <a *ngIf="isLoggedIn" routerLink="/events" class="btn btn-outline-light me-2">Events</a>
+      <button *ngIf="isLoggedIn" (click)="logout()" class="btn btn-danger">Logout</button>
+    </div>
+  </nav>
+  
