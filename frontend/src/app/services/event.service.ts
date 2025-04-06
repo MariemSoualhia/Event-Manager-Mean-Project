@@ -27,7 +27,11 @@ export class EventService {
     const res = await axios.post(this.baseUrl, eventData, this.getAuthHeaders());
     return res.data;
   }
-
+  async updateEvent(eventData: any) {
+    const res = await axios.put(`${this.baseUrl}/${eventData._id}`, eventData, this.getAuthHeaders());
+    return res.data;
+  }
+  
   async registerToEvent(eventId: string) {
     const res = await axios.post(`${this.baseUrl}/${eventId}/register`, {}, this.getAuthHeaders());
     return res.data;

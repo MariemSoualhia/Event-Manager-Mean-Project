@@ -1,15 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { EventService } from '../../services/event.service';
 import { RouterModule } from '@angular/router';
+import { EventService } from '../../services/event.service';
+import { EventDetailModalComponent } from '../event-detail-modal/event-detail-modal.component';
+import { EventEditModalComponent } from '../event-edit-modal/event-edit-modal.component';
 
 @Component({
   selector: 'app-event-crud',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './event-crud.component.html',
-  styleUrl: './event-crud.component.css'
+  styleUrls: ['./event-crud.component.css'], // ✅ corrected 'styleUrl' ➜ 'styleUrls'
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    EventDetailModalComponent,
+    EventEditModalComponent
+  ]
 })
 export class EventCrudComponent implements OnInit {
   title = '';
@@ -17,10 +25,20 @@ export class EventCrudComponent implements OnInit {
   date = '';
   location = '';
   events: any[] = [];
+  selectedEvent: any = null;
+  editingEvent: any = null;
+  currentUserId = '';
+  currentUserRole= '';
 
   constructor(private eventService: EventService) {}
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      this.currentUserId = payload.id;
+      this.currentUserRole = payload.role;
+    }
     this.loadEvents();
   }
 
@@ -72,5 +90,17 @@ export class EventCrudComponent implements OnInit {
     this.description = '';
     this.date = '';
     this.location = '';
+  }
+
+  onEditEvent(event: any) {
+    this.selectedEvent = null; // 👈 Fermer la modale de détails
+    this.editingEvent = { ...event }; // clone pour formulaire d'édition
+  }
+
+  onSaveEdit(updatedEvent: any) {
+    this.eventService.updateEvent(updatedEvent).then(() => {
+      this.loadEvents();
+      this.editingEvent = null;
+    });
   }
 }

@@ -1,46 +1,75 @@
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Event Management</h2>
-  
-    <form class="card p-4 mb-4 shadow" (ngSubmit)="createEvent()">
-      <h4 class="mb-3">Create a New Event</h4>
-      <div class="row g-3">
-        <div class="col-md-6">
-          <input type="text" class="form-control" placeholder="Title" [(ngModel)]="title" name="title" required>
-        </div>
-        <div class="col-md-6">
-          <input type="datetime-local" class="form-control" [(ngModel)]="date" name="date" required>
-        </div>
-        <div class="col-md-6">
-          <input type="text" class="form-control" placeholder="Location" [(ngModel)]="location" name="location">
-        </div>
-        <div class="col-md-6">
-          <textarea class="form-control" rows="1" placeholder="Description" [(ngModel)]="description" name="description"></textarea>
-        </div>
+  <h2 class="text-center mb-4">Event Management</h2>
+
+  <!-- Create Event Form -->
+  <form class="card p-4 mb-4 shadow" (ngSubmit)="createEvent()">
+    <h4 class="mb-3">Create a New Event</h4>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <input type="text" class="form-control" placeholder="Title" [(ngModel)]="title" name="title" required>
       </div>
-      <div class="text-end mt-3">
-        <button class="btn btn-success" type="submit">Create Event</button>
+      <div class="col-md-6">
+        <input type="datetime-local" class="form-control" [(ngModel)]="date" name="date" required>
       </div>
-    </form>
-  
-    <div class="row">
-      <div *ngFor="let event of events" class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body">
-            <h5 class="card-title">{{ event.title }}</h5>
-            <p class="card-text">{{ event.description }}</p>
-            <p class="card-text small text-muted">
-              📍 {{ event.location }} <br>
-              🗓️ {{ event.date | date: 'medium' }} <br>
-              👤 {{ event.createdBy?.name }}
-            </p>
-          </div>
-          <div class="card-footer d-flex justify-content-between">
-            <button class="btn btn-primary btn-sm" (click)="register(event._id)">Register</button>
-            <button class="btn btn-outline-danger btn-sm" (click)="deleteEvent(event._id)">Delete</button>
+      <div class="col-md-6">
+        <input type="text" class="form-control" placeholder="Location" [(ngModel)]="location" name="location">
+      </div>
+      <div class="col-md-6">
+        <textarea class="form-control" rows="1" placeholder="Description" [(ngModel)]="description" name="description"></textarea>
+      </div>
+    </div>
+    <div class="text-end mt-3">
+      <button class="btn btn-success" type="submit">Create Event</button>
+    </div>
+  </form>
+
+  <!-- Event Cards -->
+  <div class="row">
+    <div *ngFor="let event of events" class="col-md-6 col-lg-4 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">{{ event.title }}</h5>
+          <p class="card-text">{{ event.description }}</p>
+          <p class="card-text small text-muted">
+            📍 {{ event.location }} <br>
+            🗓️ {{ event.date | date: 'medium' }} <br>
+            👤 {{ event.createdBy?.name }}
+          </p>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+          <button class="btn btn-outline-primary btn-sm" (click)="selectedEvent = event">
+            👁️ Details
+          </button>
+          <div>
+            <button class="btn btn-primary btn-sm me-2" (click)="register(event._id)">Register</button>
+            <!-- Bouton Delete : affiché uniquement si créateur ou admin -->
+<button
+  *ngIf="event.createdBy?._id === currentUserId || currentUserRole === 'admin'"
+  class="btn btn-outline-danger btn-sm"
+  (click)="deleteEvent(event._id)">
+  Delete
+</button>
+
           </div>
         </div>
       </div>
     </div>
   </div>
-  
-  
+</div>
+
+<!-- Modal Details -->
+<app-event-detail-modal
+  *ngIf="selectedEvent"
+  [event]="selectedEvent"
+  [currentUserId]="currentUserId"
+  (closeModal)="selectedEvent = null"
+  (edit)="onEditEvent($event)">
+</app-event-detail-modal>
+
+<!-- Modal Edit -->
+<app-event-edit-modal
+  *ngIf="editingEvent"
+  [event]="editingEvent"
+  (closeModal)="editingEvent = null"
+  (save)="onSaveEdit($event)">
+</app-event-edit-modal>

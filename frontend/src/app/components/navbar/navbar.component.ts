@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class NavbarComponent implements OnInit {
   isLoggedIn = false;
-
+  role: string | null = null;
   constructor(
     public authService: AuthService,
     private router: Router,
@@ -25,7 +25,17 @@ export class NavbarComponent implements OnInit {
         this.isLoggedIn = status;
       });
     });
+    this.authService.loggedIn$.subscribe(status => {
+      this.isLoggedIn = status;
+      if (status) {
+        this.role = localStorage.getItem('role');
+      }
+    });
   }
+ 
+
+
+
   
   logout() {
     this.authService.logout();

@@ -4,6 +4,8 @@
       <a *ngIf="!isLoggedIn" routerLink="/login" class="btn btn-outline-light me-2">Login</a>
       <a *ngIf="!isLoggedIn" routerLink="/register" class="btn btn-outline-light me-2">Register</a>
       <a *ngIf="isLoggedIn" routerLink="/events" class="btn btn-outline-light me-2">Events</a>
+      <a *ngIf="role === 'admin' && isLoggedIn" routerLink="/dashboard" class="btn btn-outline-warning me-2">Dashboard</a>
+
       <button *ngIf="isLoggedIn" (click)="logout()" class="btn btn-danger">Logout</button>
     </div>
   </nav>

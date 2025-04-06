@@ -23,6 +23,9 @@ export class AuthService {
   async login(email: string, password: string) {
     const res = await axios.post(`${this.baseUrl}/login`, { email, password });
     localStorage.setItem('token', res.data.token);
+     // 🔥 Simule un rôle récupéré depuis le backend
+     const role = email === 'admin@example.com' ? 'admin' : 'user';
+     localStorage.setItem('role', role);
     this.loggedIn.next(true); 
     return res.data;
   }

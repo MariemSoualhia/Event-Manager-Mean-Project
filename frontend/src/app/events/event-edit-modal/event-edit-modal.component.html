@@ -1,0 +1,26 @@
+<div class="modal-overlay" (click)="close()"></div>
+<div class="modal-content">
+  <h4>Edit Event</h4>
+  <form (ngSubmit)="saveChanges()">
+    <div class="mb-3">
+      <label>Title</label>
+      <input [(ngModel)]="event.title" name="title" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label>Date</label>
+      <input type="datetime-local" [(ngModel)]="event.date" name="date" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label>Location</label>
+      <input [(ngModel)]="event.location" name="location" class="form-control" />
+    </div>
+    <div class="mb-3">
+      <label>Description</label>
+      <textarea [(ngModel)]="event.description" name="description" class="form-control"></textarea>
+    </div>
+    <div class="text-end">
+      <button type="submit" class="btn btn-success me-2">Save</button>
+      <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+    </div>
+  </form>
+</div>

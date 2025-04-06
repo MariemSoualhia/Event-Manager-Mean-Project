@@ -22,3 +22,9 @@
     background-color: #219150;
     border-color: #219150;
   }
+  .card:hover {
+    transform: scale(1.01);
+    transition: all 0.2s ease-in-out;
+  }
+  
+  
