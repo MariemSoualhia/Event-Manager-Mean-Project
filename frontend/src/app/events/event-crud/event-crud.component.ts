@@ -5,7 +5,11 @@ import { RouterModule } from '@angular/router';
 import { EventService } from '../../services/event.service';
 import { EventDetailModalComponent } from '../event-detail-modal/event-detail-modal.component';
 import { EventEditModalComponent } from '../event-edit-modal/event-edit-modal.component';
-
+import {  EventFilterPipe} from '../../pipes/event-filter.pipe';
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { CalendarOptions } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
 @Component({
   selector: 'app-event-crud',
   standalone: true,
@@ -16,7 +20,10 @@ import { EventEditModalComponent } from '../event-edit-modal/event-edit-modal.co
     FormsModule,
     RouterModule,
     EventDetailModalComponent,
-    EventEditModalComponent
+    EventEditModalComponent,
+    EventFilterPipe,
+    FullCalendarModule
+
   ]
 })
 export class EventCrudComponent implements OnInit {
@@ -29,6 +36,15 @@ export class EventCrudComponent implements OnInit {
   editingEvent: any = null;
   currentUserId = '';
   currentUserRole= '';
+  searchText: string = '';
+  calendarOptions: CalendarOptions = {
+    plugins: [dayGridPlugin, interactionPlugin],
+    initialView: 'dayGridMonth',
+    events: [],
+    dateClick: this.handleDateClick.bind(this),
+    eventClick: this.handleEventClick.bind(this)
+  };
+
 
   constructor(private eventService: EventService) {}
 
@@ -44,7 +60,20 @@ export class EventCrudComponent implements OnInit {
 
   async loadEvents() {
     try {
-      this.events = await this.eventService.getAllEvents();
+    
+      const res = await this.eventService.getAllEvents();
+      this.events = res;
+  
+      // ⏳ événements futurs seulement pour le calendrier
+      const now = new Date();
+  
+      const upcoming = res.filter((e: any) => new Date(e.date) > now);
+  
+      this.calendarOptions.events = upcoming.map((e: any) => ({
+        title: e.title,
+        date: e.date,
+        id: e._id
+      }));
     } catch (error) {
       console.error('Error loading events', error);
     }
@@ -71,11 +100,15 @@ export class EventCrudComponent implements OnInit {
     try {
       await this.eventService.registerToEvent(eventId);
       alert('Successfully registered!');
+      this.loadEvents();
     } catch (error) {
       console.error('Registration failed', error);
     }
   }
-
+  isAlreadyRegistered(event: any): boolean {
+    return event.attendees?.some((attendee: any) => attendee._id === this.currentUserId);
+  }
+  
   async deleteEvent(eventId: string) {
     try {
       await this.eventService.deleteEvent(eventId);
@@ -84,7 +117,16 @@ export class EventCrudComponent implements OnInit {
       console.error('Delete failed', error);
     }
   }
+  handleDateClick(arg: any) {
+    alert(`Date sélectionnée : ${arg.dateStr}`);
+  }
 
+  handleEventClick(arg: any) {
+    const event = this.events.find(e => e._id === arg.event.id);
+    if (event) this.selectedEvent = event;
+  }
+
+  
   clearForm() {
     this.title = '';
     this.description = '';

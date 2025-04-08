@@ -1,63 +1,95 @@
-<div class="container mt-5">
+<div class="container mt-8">
   <h2 class="text-center mb-4">Event Management</h2>
 
-  <!-- Create Event Form -->
-  <form class="card p-4 mb-4 shadow" (ngSubmit)="createEvent()">
-    <h4 class="mb-3">Create a New Event</h4>
-    <div class="row g-3">
-      <div class="col-md-6">
-        <input type="text" class="form-control" placeholder="Title" [(ngModel)]="title" name="title" required>
-      </div>
-      <div class="col-md-6">
-        <input type="datetime-local" class="form-control" [(ngModel)]="date" name="date" required>
-      </div>
-      <div class="col-md-6">
-        <input type="text" class="form-control" placeholder="Location" [(ngModel)]="location" name="location">
-      </div>
-      <div class="col-md-6">
-        <textarea class="form-control" rows="1" placeholder="Description" [(ngModel)]="description" name="description"></textarea>
-      </div>
-    </div>
-    <div class="text-end mt-3">
-      <button class="btn btn-success" type="submit">Create Event</button>
-    </div>
-  </form>
-
-  <!-- Event Cards -->
   <div class="row">
-    <div *ngFor="let event of events" class="col-md-6 col-lg-4 mb-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">{{ event.title }}</h5>
-          <p class="card-text">{{ event.description }}</p>
-          <p class="card-text small text-muted">
-            📍 {{ event.location }} <br>
-            🗓️ {{ event.date | date: 'medium' }} <br>
-            👤 {{ event.createdBy?.name }}
-          </p>
-        </div>
-        <div class="card-footer d-flex justify-content-between">
-          <button class="btn btn-outline-primary btn-sm" (click)="selectedEvent = event">
-            👁️ Details
-          </button>
-          <div>
-            <button class="btn btn-primary btn-sm me-2" (click)="register(event._id)">Register</button>
-            <!-- Bouton Delete : affiché uniquement si créateur ou admin -->
-<button
-  *ngIf="event.createdBy?._id === currentUserId || currentUserRole === 'admin'"
-  class="btn btn-outline-danger btn-sm"
-  (click)="deleteEvent(event._id)">
-  Delete
-</button>
-
+    <!-- Left side: Form, Search, Cards -->
+    <div class="col-lg-8">
+      <!-- Create Event Form -->
+      <form class="card p-4 mb-4 shadow" (ngSubmit)="createEvent()">
+        <h4 class="mb-3">Create a New Event</h4>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Title" [(ngModel)]="title" name="title" required>
+          </div>
+          <div class="col-md-6">
+            <input type="datetime-local" class="form-control" [(ngModel)]="date" name="date" required>
+          </div>
+          <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Location" [(ngModel)]="location" name="location">
+          </div>
+          <div class="col-md-6">
+            <textarea class="form-control" rows="1" placeholder="Description" [(ngModel)]="description" name="description"></textarea>
           </div>
         </div>
+        <div class="text-end mt-3">
+          <button class="btn btn-success" type="submit">Create Event</button>
+        </div>
+      </form>
+
+      <!-- Search Bar -->
+      <div class="input-group mb-4">
+        <input type="text"
+               class="form-control"
+               placeholder="Search by title, location or creator"
+               [(ngModel)]="searchText" />
+      </div>
+
+      <!-- Event Cards -->
+      <div class="row">
+        <div *ngFor="let event of events | eventFilter:searchText" class="col-md-6 col-lg-6 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">{{ event.title }}</h5>
+              <p class="card-text">{{ event.description }}</p>
+              <p class="card-text small text-muted">
+                📍 {{ event.location }} <br>
+                🗓️ {{ event.date | date: 'medium' }} <br>
+                👤 {{ event.createdBy?.name }}
+              </p>
+            </div>
+            <div class="card-footer d-flex justify-content-center gap-2">
+              <button class="btn btn-outline-primary btn-sm w-100" (click)="selectedEvent = event">
+                👁️ Details
+              </button>
+              <div>
+                <!-- Register -->
+                <button 
+                  *ngIf="currentUserId && event.createdBy?._id !== currentUserId && !isAlreadyRegistered(event)" 
+                  class="btn btn-outline-primary btn-sm w-100" 
+                  (click)="register(event._id)">
+                  Register
+                </button>
+
+                <span *ngIf="isAlreadyRegistered(event)" class="badge bg-success text-white me-2">
+                  ✅ Registered
+                </span>
+
+                <!-- Delete -->
+                <button
+                  *ngIf="event.createdBy?._id === currentUserId || currentUserRole === 'admin'"
+                  class="btn btn-outline-danger btn-sm w-100"
+                  style="white-space: nowrap"
+                  (click)="deleteEvent(event._id)">
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right side: Calendar -->
+    <div class="col-lg-4">
+      <div class="card p-3 shadow">
+        <h5 class="mb-3">Upcoming Events</h5>
+        <full-calendar [options]="calendarOptions" style="max-height: 800px;"></full-calendar>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal Details -->
+<!-- Modals -->
 <app-event-detail-modal
   *ngIf="selectedEvent"
   [event]="selectedEvent"
@@ -66,7 +98,6 @@
   (edit)="onEditEvent($event)">
 </app-event-detail-modal>
 
-<!-- Modal Edit -->
 <app-event-edit-modal
   *ngIf="editingEvent"
   [event]="editingEvent"
